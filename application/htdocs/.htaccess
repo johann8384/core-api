@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteBase /app1/
+#RewriteRule /app1/ /app1/index.php [L]
+RewriteRule index\.php$ index.php [L]
+RewriteRule !\.(js|tpl|ico|txt|gif|jpg|png|css)$ index.php
