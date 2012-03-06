@@ -1,19 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
-| PHP Style Autoload
-*/
-function __autoload($class) {  
-    if (file_exists(APPPATH."models/".strtolower($class).EXT)) {  
-        include_once(APPPATH."models/".strtolower($class).EXT);  
-    } else if (file_exists(APPPATH."controllers/".strtolower($class).EXT)) {  
-        include_once(APPPATH."controllers/".strtolower($class).EXT);  
-    } else if (file_exists(APPPATH."libraries/".strtolower($class).EXT)) {  
-        include_once(APPPATH."libraries/".strtolower($class).EXT);  
-    }  
-} 
-
-/*
 |--------------------------------------------------------------------------
 | Base Site URL
 |--------------------------------------------------------------------------

@@ -17,10 +17,11 @@
  */
 class Org extends Base_Controller {
 	/**
-	 * Handles GET requests for /dns/rr
+	 * Handles GET requests for /org
 	 */
 	public function index_get()
 	{
-		extract($this->check_required_params(Array('lhs'), Array('X-API-KEY')));
+		extract($this->check_required_params(Array('tid'), Array('X-API-KEY')));
+		
 	}
 }
