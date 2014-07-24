@@ -21,6 +21,7 @@ class REST_Controller extends CI_Controller {
 	protected $_args = array();
 	protected $_allow = TRUE;
 	protected $_user_ldap_dn = NULL;
+	protected $_user_record = NULL;
 
 	// List all supported methods, the first will be the default format
 	protected $_supported_formats = array(
@@ -167,10 +168,10 @@ class REST_Controller extends CI_Controller {
 
 	/*
 	 * Remap
-	 *
-	 * Requests are not made to methods directly The request will be for an "object".
-	 * this simply maps the object and method to the correct Controller method.
-	 */
+	*
+	* Requests are not made to methods directly The request will be for an "object".
+	* this simply maps the object and method to the correct Controller method.
+	*/
 	public function _remap($object_called, $arguments)
 	{
 		$pattern = '/^(.*)\.(' . implode('|', array_keys($this->_supported_formats)) . ')$/';
@@ -445,7 +446,7 @@ class REST_Controller extends CI_Controller {
 		// Find the key from server or arguments
 		if ($key = isset($this->_args[$api_key_variable]) ? $this->_args[$api_key_variable] : $this->input->server($key_name))
 		{
-			if ( ! $row = $this->rest->db->where('key', $key)->get(config_item('rest_keys_table'))->row())
+			if ( ! $row = $this->rest->db->where('key', Hash::encode_hash($key))->get(config_item('rest_keys_table'))->row())
 			{
 				log_message('debug', 'Detect API Key: failure, invalid key');
 				return FALSE;
@@ -693,6 +694,24 @@ class REST_Controller extends CI_Controller {
 		return explode("\n", trim($string, "\n"));
 	}
 
+	protected function _perform_db_auth($username = '', $password = NULL)
+	{
+		if ($row = $this->rest->db->where('username', $username)->get(config_item('api_users_table'))->row())
+		{
+			if ( $row = $this->rest->db->where('username', $username)->get(config_item('api_users_table'))->row())
+			{
+				log_message('debug', 'DB Auth: Login: Success');
+				$this->_user_record = $row;
+				return TRUE;
+			} else {
+				log_message('debug', 'DB Auth: Invalid Password');
+				return FALSE;
+			}
+		} else {
+			log_message('debug', 'DB Auth: Uknown User');
+			return FALSE;
+		}
+	}
 	protected function _perform_ldap_auth($username = '', $password = NULL)
 	{
 		if (empty($username))
@@ -786,6 +805,11 @@ class REST_Controller extends CI_Controller {
 		{
 			log_message('debug', 'Check Login: Performing LDAP Authentication');
 			$ret = $this->_perform_ldap_auth($username, $password);
+			return $ret;
+		} else if (strotolower($this->config->item('auth_source')) == 'mysql')
+		{
+			log_message('debug', 'Check Login: Performing DB Authentication');
+			$ret = $this->_perform_db_auth($username, $password);
 			return $ret;
 		}
 

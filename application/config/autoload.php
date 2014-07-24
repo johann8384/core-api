@@ -1,5 +1,19 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /*
+| PHP Style Autoload
+*/
+function __autoload($class) {
+	$paths = Array('models', 'controllers', 'libraries');
+	foreach ($paths as $path)
+	{
+		if (file_exists(APPPATH .  $path . strtolower($class) . '.php')) {
+				include_once(APPPATH .  $path . strtolower($class) . '.php');
+				return;
+		}
+	}
+	return;
+}
+/*
 | -------------------------------------------------------------------
 | AUTO-LOADER
 | -------------------------------------------------------------------

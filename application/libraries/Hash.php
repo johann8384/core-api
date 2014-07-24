@@ -41,63 +41,53 @@ class Hash
 
 	public static function encode_hash($string, $key=NULL)
 	{
-		core_base::startf();
-
 		if ($key === NULL)
 		{
 			$key = self::$key;
 		}
 
-		$hash = core_crypto::encrypt($string, NULL, NULL, $key);
+		$hash = Crypto::encrypt($string, NULL, NULL, $key);
 
 		self::log_message('String: '.$string);
 		self::log_message('Key: '.self::$key);
 		self::log_message('Hash: '.$hash);
-
-		core_base::endf();
-
+		self::log_message('Hash Length: ' . strlen($hash));
 		return $hash;
 	}
 
 	public static function decode_hash($hash, $key=NULL)
 	{
-		core_base::startf();
-
 		if ($key === NULL)
 		{
 			$key = self::$key;
 		}
 
-		$string = core_crypto::decrypt($hash, NULL, NULL, $key);
+		$string = Crypto::decrypt($hash, NULL, NULL, $key);
 
 		self::log_message('Hash: '.$hash);
 		self::log_message('Key: '.self::$key);
 		self::log_message('String: '.$string);
-
-		core_base::endf();
 		return $string;
 	}
 
 	public static function encode_object($object)
 	{
-		core_base::startf();
-
 		$json = json_encode($object);
 		$hash = self::encode_hash($json);
 
-		core_base::endf();
 		return $hash;
 	}
 
 	public static function decode_object($hash)
 	{
-		core_base::startf();
-
 		$json = self::decode_hash($hash);
 		$object = json_decode($json);
-
-		core_base::endf();
 		return $object;
+	}
+
+	private static function log_message($string)
+	{
+		echo time() . ': ' .  $string . "\n";
 	}
 }
 ?>
